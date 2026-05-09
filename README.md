@@ -86,3 +86,13 @@ cartera-fiscal/
 - **3 tablas SQL** relacionadas con PK y FK en Supabase
 - **API REST** con manejo de errores y códigos HTTP correctos
 - **Autenticación** con Supabase Auth y protección de rutas con middleware
+
+---
+## Diagrma de flujo en mermaid 
+
+![Diagrama de flujo](<Cliente y Obligaciones-2026-05-09-230556.png>)
+
+---
+## Enlace de despliegue en Vercel
+
+Abre tu navegador en: **https://evidencia3-web-design.vercel.app/unauthorized** 
