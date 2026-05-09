@@ -23,14 +23,15 @@ export async function middleware(request) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
+  const publicPaths = ['/login', '/unauthorized']
 
-  if (!user && pathname !== '/login') {
+  if (!user && !publicPaths.includes(pathname)) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/unauthorized'
     return NextResponse.redirect(url)
   }
 
-  if (user && pathname === '/login') {
+  if (user && publicPaths.includes(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)

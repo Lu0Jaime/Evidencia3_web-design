@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { IconEdit, IconPlus, IconTrash, IconSearch, IconEye, IconSave, IconUser, IconUsers, IconList, IconX, IconWarning } from '@/components/Icons'
+import { IconEdit, IconPlus, IconTrash, IconSearch, IconEye, IconSave, IconUser, IconUsers, IconList, IconX, IconWarning, IconCheck } from '@/components/Icons'
 import { Toast } from '@/components/Toast'
 
 function BadgeEstatus({ est }) {
@@ -32,6 +32,7 @@ export default function ClientesPage() {
   const [editId,    setEditId]    = useState(null)
   const [confirm,   setConfirm]   = useState(null)
   const [detail,    setDetail]    = useState(null)
+  const [tab,       setTab]       = useState('activos')
 
   const BLANK = { nombre_cliente:'', rfc_cliente:'', regimen_fiscal:'', codigo_postal:'', direccion_fiscal:'', correo_electronico:'', actividad_economica:'', estatus_cliente:'Activo' }
   const [form,   setForm]   = useState(BLANK)
@@ -87,6 +88,14 @@ export default function ClientesPage() {
     setConfirm(null)
     if (!res.ok) { addToast(json.error||'Error al eliminar','error'); return }
     addToast('Cliente eliminado correctamente','warn')
+    fetchClientes()
+  }
+
+  async function reactivar(c) {
+    const res  = await fetch(`/api/clientes/${c.id_cliente}`, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...c, estatus_cliente:'Activo' }) })
+    const json = await res.json()
+    if (!res.ok) { addToast(json.error||'Error al reactivar','error'); return }
+    addToast('Cliente reactivado correctamente','success')
     fetchClientes()
   }
 
@@ -178,6 +187,28 @@ export default function ClientesPage() {
         </div>
       </div>
 
+      {/* ─── TABS ─── */}
+      <div style={{ display:'flex', gap:0, borderBottom:'2px solid var(--border)', marginBottom:0 }}>
+        {[
+          { key:'activos',     label:'Activos',     count: clientes.filter(c=>c.estatus_cliente==='Activo').length },
+          { key:'suspendidos', label:'Suspendidos',  count: clientes.filter(c=>c.estatus_cliente==='Suspendido').length },
+        ].map(({ key, label, count }) => (
+          <button key={key} onClick={() => setTab(key)} style={{
+            padding:'9px 20px', border:'none', background:'none',
+            fontFamily:'var(--font)', fontSize:'.83rem', cursor:'pointer',
+            fontWeight: tab===key ? 600 : 400,
+            color: tab===key ? 'var(--primary)' : 'var(--text2)',
+            borderBottom: tab===key ? '2px solid var(--primary)' : '2px solid transparent',
+            marginBottom:'-2px', display:'flex', alignItems:'center', gap:6,
+          }}>
+            {label}
+            <span style={{ background: tab===key ? 'var(--primary-bg)' : 'var(--surface2)', color: tab===key ? 'var(--primary)' : 'var(--text3)', borderRadius:10, padding:'1px 7px', fontSize:'.72rem', fontWeight:600 }}>
+              {count}
+            </span>
+          </button>
+        ))}
+      </div>
+
       {/* ─── TABLA ─── */}
       <div className="card">
         <div className="card-header">
@@ -208,7 +239,14 @@ export default function ClientesPage() {
                       <div className="empty-title">{search ? `Sin resultados para "${search}"` : 'Sin clientes. Registra el primero arriba.'}</div>
                     </div>
                   </td></tr>
-                ) : clientes.map(c => (
+                ) : clientes.filter(c => tab==='activos' ? c.estatus_cliente==='Activo' : c.estatus_cliente==='Suspendido').length === 0 ? (
+                  <tr><td colSpan={7}>
+                    <div className="empty">
+                      <div className="empty-icon"><IconUser size={36} /></div>
+                      <div className="empty-title">{tab==='activos' ? 'Sin clientes activos' : 'Sin clientes suspendidos'}</div>
+                    </div>
+                  </td></tr>
+                ) : clientes.filter(c => tab==='activos' ? c.estatus_cliente==='Activo' : c.estatus_cliente==='Suspendido').map(c => (
                   <tr key={c.id_cliente}>
                     <td className="td-mono" style={{color:'var(--text3)'}}>#{c.id_cliente}</td>
                     <td><strong>{c.nombre_cliente}</strong></td>
@@ -219,7 +257,8 @@ export default function ClientesPage() {
                     <td>
                       <div style={{display:'flex',gap:4}}>
                         <button className="btn btn-secondary btn-sm" onClick={()=>verDetalle(c.id_cliente)} title="Ver detalle"><IconEye size={13} /></button>
-                        <button className="btn btn-secondary btn-sm" onClick={()=>iniciarEdicion(c)} title="Editar"><IconEdit size={13} /></button>
+                        {tab==='activos' && <button className="btn btn-secondary btn-sm" onClick={()=>iniciarEdicion(c)} title="Editar"><IconEdit size={13} /></button>}
+                        {tab==='suspendidos' && <button className="btn btn-secondary btn-sm" onClick={()=>reactivar(c)} title="Reactivar" style={{color:'var(--primary)'}}><IconCheck size={13} /></button>}
                         <button className="btn btn-danger btn-sm" onClick={()=>setConfirm({id:c.id_cliente,nombre:c.nombre_cliente})} title="Eliminar"><IconTrash size={13} /></button>
                       </div>
                     </td>

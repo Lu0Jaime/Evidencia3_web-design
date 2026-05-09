@@ -14,7 +14,7 @@ export default function ObligacionesPage() {
   const [saving,   setSaving]   = useState(false)
   const [search,   setSearch]   = useState('')
   const [fEstatus, setFEstatus] = useState('')
-  const [fCumpl,   setFCumpl]   = useState('')
+  const [fCumpl,   setFCumpl]   = useState('Pendiente')
   const [toasts,   setToasts]   = useState([])
   const [editId,   setEditId]   = useState(null)
   const [confirm,  setConfirm]  = useState(null)
@@ -166,6 +166,25 @@ export default function ObligacionesPage() {
         </div>
       </div>
 
+      {/* ─── TABS ─── */}
+      <div style={{ display:'flex', gap:0, borderBottom:'2px solid var(--border)' }}>
+        {[
+          { key:'Pendiente',  label:'Pendientes' },
+          { key:'Presentada', label:'Archivadas' },
+        ].map(({ key, label }) => (
+          <button key={key} onClick={() => setFCumpl(key)} style={{
+            padding:'9px 20px', border:'none', background:'none',
+            fontFamily:'var(--font)', fontSize:'.83rem', cursor:'pointer',
+            fontWeight: fCumpl===key ? 600 : 400,
+            color: fCumpl===key ? 'var(--primary)' : 'var(--text2)',
+            borderBottom: fCumpl===key ? '2px solid var(--primary)' : '2px solid transparent',
+            marginBottom:'-2px',
+          }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* ─── FILTROS ─── */}
       <div className="toolbar">
         <div className="search-wrap" style={{maxWidth:260}}>
@@ -177,11 +196,6 @@ export default function ObligacionesPage() {
           <option>Al día</option>
           <option>Próximo a vencer</option>
           <option>Vencido</option>
-        </select>
-        <select value={fCumpl} onChange={e=>setFCumpl(e.target.value)} style={{padding:'8px 11px',border:'1px solid var(--border2)',borderRadius:6,fontFamily:'var(--font)',fontSize:'.82rem',color:'var(--text)',background:'var(--surface2)'}}>
-          <option value="">Pendiente y Presentada</option>
-          <option>Pendiente</option>
-          <option>Presentada</option>
         </select>
         <span className="badge badge-blue">{obligs.length} resultado(s)</span>
       </div>
