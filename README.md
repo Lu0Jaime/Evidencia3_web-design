@@ -51,6 +51,8 @@ cartera-fiscal/
 │   ├── layout.js              ← Header con navegación y alertas
 │   ├── page.js                ← Dashboard principal
 │   ├── globals.css            ← Estilos globales
+│   ├── login/
+│   │   └── page.js            ← Página de inicio de sesión
 │   ├── clientes/
 │   │   └── page.js            ← CRUD de clientes (Client Component)
 │   ├── obligaciones/
@@ -62,8 +64,11 @@ cartera-fiscal/
 │       └── obligaciones/
 │           ├── route.js       ← GET (listar+filtros) · POST (crear)
 │           └── [id]/route.js  ← PUT (editar) · DELETE
+├── components/
+│   └── LogoutButton.js        ← Botón de cierre de sesión
 ├── lib/
 │   └── supabase.js            ← Cliente Supabase
+├── middleware.js              ← Protección de rutas (auth guard)
 ├── .env.local.example         ← Plantilla de variables de entorno
 └── package.json
 ```
@@ -80,3 +85,4 @@ cartera-fiscal/
 - **Búsqueda** en tiempo real por nombre y RFC
 - **3 tablas SQL** relacionadas con PK y FK en Supabase
 - **API REST** con manejo de errores y códigos HTTP correctos
+- **Autenticación** con Supabase Auth y protección de rutas con middleware
