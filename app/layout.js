@@ -69,7 +69,7 @@ export default async function RootLayout({ children }) {
                 <Link href="/obligaciones">Obligaciones</Link>
               </nav>
               <div className="header-right">
-                <span>{new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})}</span>
+                <span>{new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric',timeZone:'America/Mexico_City'})}</span>
                 <ThemeToggle />
                 <LogoutButton />
               </div>
